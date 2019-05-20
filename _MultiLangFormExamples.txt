@@ -1,0 +1,90 @@
+––––––––––––––––––––––––––––––––
+Builder
+––––––––––––––––––––––––––––––––
+
+type=textarea, name=simpleTextarea, id=simpleTextarea, class=formInput, cols=20, rows=20;
+
+type=radio, name=simpleSex, id=GenderRadio, class=formInput;
+type=checkbox, name=simpleGender, id=GenderCheckbox, class=formInput;
+type=select, name=selectGender, id=GenderSelect, class=formInput;
+
+type=text, name=simpleText, id=simpleText, class=formInput, required=true;
+type=email, name=simpleEmail, id=simpleEmail, class=formInput;
+type=password, name=simplePass, id=simplePass, class=formInput, required=true;
+type=number, name=simpleNumber, id=simpleNumber, class=formInput, value=5;
+type=date, name=simpleDate, id=simpleDate, class=formInput, placeholder=05-12-1990;
+type=color, name=simpleColor, id=simpleColor, class=formInput;
+type=range, name=simpleRange, id=simpleRange, class=formInput, from=1, to=10;
+type=datetime, name=simpleDateTime, id=simpleDateTime, class=formInput;
+type=url, name=simpleUrl, id=simpleUrl, class=formInput, placeholder=www.example.com;
+type=button, name=simpleButton, id=simpleButton, class=formInput;
+type=submit, name=submit, id=submit, class=formInput;
+
+
+––––––––––––––––––––––––––––––––
+en
+––––––––––––––––––––––––––––––––
+
+id=simpleTextarea, label=Textarea, value=This is an english text.;
+
+id=GenderRadio, label=Gender Radio, values=m:f(checked):n;
+id=GenderCheckbox, label=Gender Checkbox, values=m:f:n(checked);
+id=GenderSelect, label=Gender Select, values=male:female:none;
+
+id=simpleText, label=Textfield, placeholder=this is a placeholder;
+id=simpleEmail, label=Your Mail, placeholder=my@mail.com;
+id=simplePass, label=Password, value=myPass;
+id=simpleNumber, label=Number;
+id=simpleDate, label=Date;
+id=simpleColor, label=Color;
+id=simpleRange, label=Range;
+id=simpleDateTime, label=Date Time;
+id=simpleUrl, label=Website, placeholder=www.example.com;
+id=simpleButton, value=Button;
+id=submit, value=Send;
+
+
+––––––––––––––––––––––––––––––––
+de
+––––––––––––––––––––––––––––––––
+
+id=simpleTextarea, label=Textfeld, value=Dies ist ein deutscher Text.;
+
+id=GenderRadio, label=Geschlecht Radio, values=m:w(checked):u;
+id=GenderCheckbox, label=Geschlecht Checkbox, values=m:w:u(checked);
+id=GenderSelect, label=Geschlecht Select, values=männlich:weiblich:unbestimmt;
+
+id=simpleText, label=Textfeld, placeholder=Dies ist ein Platzhalter;
+id=simpleEmail, label=Deine Mail, placeholder=my@mail.ch;
+id=simplePass, label=Passwort, value=meinPass;
+id=simpleNumber, label=Nummer;
+id=simpleDate, label=Datum;
+id=simpleColor, label=Farbe;
+id=simpleRange, label=Bereich;
+id=simpleDateTime, label=Datum Uhrzeit;
+id=simpleUrl, label=Webseite, placeholder=www.beispiel.ch;
+id=simpleButton, value=Knopf;
+id=submit, value=Senden;
+
+
+––––––––––––––––––––––––––––––––
+fi
+––––––––––––––––––––––––––––––––
+
+id=simpleTextarea, label=Textramaklo, value=Rumilo do texa suomi.;
+
+id=GenderRadio, label=Tuflode Radio, values=m:w(checked):u;
+id=GenderCheckbox, label=Toflode Checkbox, values=m:w:u(checked);
+id=GenderSelect, label=Tuflode Select, values=m:w:uwerb;
+
+id=simpleText, label=Ramaklo farl, placeholder=Talhama fa ramaklo;
+id=simpleEmail, label=Ta Mail, placeholder=my@mail.fi;
+id=simplePass, label=Bassmot, value=moBass;
+id=simpleNumber, label=Numro;
+id=simpleDate, label=Dato;
+id=simpleColor, label=Colore;
+id=simpleRange, label=Pertare;
+id=simpleDateTime, label=Dato, Oro;
+id=simpleUrl, label=websit, placeholder=www.brumvo.fi;
+id=simpleButton, value=Frola;
+id=submit, value=Sar;

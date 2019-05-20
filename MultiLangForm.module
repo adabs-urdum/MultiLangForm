@@ -1,0 +1,510 @@
+<?php
+/**
+ */
+class MultiLangForm extends WireData implements Module{
+
+	/**
+	 * getModuleInfo is a module required by all modules to tell ProcessWire about them
+	 *
+	 * @return array
+	 *
+	 */
+
+	public  $sResultHtml = '';
+	private $breakLabel = '';
+	private $wrap = '';
+	private $simpleTypes = array('text', 'file', 'submit', 'button', 'email', 'password', 'number', 'date', 'color', 'range', 'month', 'week', 'time', 'datetime', 'datetime-local', 'search', 'tel', 'url', 'honeypot');
+	private $multiTypes = array('radio', 'checkbox');
+	private $specialTypes = array('textarea', 'select', 'datalist', 'keygen', 'list');
+	private $noneFormTypes = array('response');
+	private $simpleAttributes = array('type', 'name', 'min', 'max', 'placeholder', 'pattern', 'value', 'size', 'maxlength', 'autocomplete', 'form', 'formaction', 'formmethod', 'formtarget', 'height', 'width', 'rows', 'cols', 'from', 'to', 'step');
+	private $boolAttributes = array('required', 'readonly', 'disabled', 'autofocus', 'multiple', 'novalidate');
+	private $aInit = array( 'structure' 	=> '',
+							'translation' 	=> '',
+							'formId'		=> 'MultiLangForm',
+							'breakLabel' 	=> false,
+							'honeyPot'		=> true,
+							'wrap'			=> '',
+							'action'		=> '',
+							'method'		=> 'POST',
+							'loader'		=> '',
+							'mail'			=> '',
+							'bcc'			=> '',
+							'betreff'		=> 'your website has called',
+							'absender'		=> '',
+							'ajaxSend'		=> true,
+							'ajaxUrl'		=> '',
+							'defaultLanguage' => 'de',
+							'requiredZeichen' => '*'
+						);
+	public $userInit = [];
+	private $sFormTag = '';
+	private $sLanguage = '';
+	private $aRequired = '';
+
+	public static function getModuleInfo() {
+		return array(
+
+			// The module'ss title, typically a little more descriptive than the class name
+			'title' => 'Multiple Language Form',
+
+			// version number
+			'version' => 1.09,
+
+			// summary is brief description of what this module is
+			'summary' => '',
+
+			// Optional URL to more information about the module
+			'href' => '',
+
+			// singular=true: indicates that only one instance of the module is allowed.
+			// This is usually what you want for modules that attach hooks.
+			'singular' => false,
+
+			// autoload=true: indicates the module should be started with ProcessWire.
+			// This is necessary for any modules that attach runtime hooks, otherwise those
+			// hooks won't get attached unless some other code calls the module on it's own.
+			// Note that autoload modules are almost always also 'singular' (seen above).
+			'autoload' => true,
+
+			// Optional font-awesome icon name, minus the 'fa-' part
+			'icon' => '',
+
+			'requires' => array(
+				'LanguageSupport',
+				'LanguageSupportFields',
+				'FieldtypeTextareaLanguage',
+				'LanguageSupportPageNames',
+				'LanguageTabs'
+			)
+		);
+	}
+	public function ___install(){
+		//Start Ajax Mail related pages
+		$fg = new Fieldgroup();
+		$fg->name = 'MultiLangForm';
+		$fg->add($this->fields->get('title')); // needed title field
+		$fg->save();
+
+		$t = new Template();
+		$t->name = 'MultiLangForm';//Used different name other than file name
+		$t->altFilename = 'MultiLangForm';//name of the template file which is under tml dir.
+		$t->fieldgroup = $fg; // add the field group
+		$t->save();
+
+		$myfile = fopen("MultiLangForm.php", "w") or die("Unable to open file!");
+		$txt = '<' . "?php if(file_exists('./../modules/MultiLangForm/ajaxSendMail.php')){include('./../modules/MultiLangForm/ajaxSendMail.php');}else{echo 'There seems to be a techinical problem. Please inform the webmaster.';} ?" . ">";
+		fwrite($myfile, $txt);
+		fclose($myfile);
+
+		$p = new Page(); // create new page object
+		$p->template = 'MultiLangForm'; // set template
+		$p->parent = wire('pages')->get(1); // set the parent
+		$p->name = 'ajaxMultiLangForm'; // give it a name used in the url for the page
+		$p->title = 'ajaxMultiLangForm'; // set page title (not neccessary but recommended)
+		$p->addStatus(Page::statusLocked);
+		$p->addStatus(Page::statusHidden);
+		$p->save();
+		//End Ajax Mail related pages
+
+		//Start creating MultiLangFormBuilder and MultiLangFormLanguages Fields
+		$f = new Field();
+		$f->type = $this->modules->get("FieldtypeTextarea");
+		$f->name = 'MultiLangFormBuilder';
+		$f->label = 'MultiLangFormBuilder';
+		$f->description = 'Hier werden die Formularelemente bestimmt. Die Reihenfolge der Elemente wird durch die Zeilen hier bestimmt.
+							Beispiele:
+							type=textarea, name=simpleTextarea, id=simpleTextarea, class=formInput, rows=20, cols=70;
+
+							type=radio, name=simpleSex, id=GenderRadio, class=formInput;
+							type=checkbox, name=simpleGender, id=GenderCheckbox, class=formInput;
+							type=select, name=selectGender, id=GenderSelect, class=formInput;
+
+							type=text, name=simpleText, id=simpleText, class=formInput, required=true;
+							type=email, name=simpleEmail, id=simpleEmail, class=formInput;
+							type=password, name=simplePass, id=simplePass, class=formInput, required=true;
+							type=number, name=simpleNumber, id=simpleNumber, class=formInput, value=5;
+							type=date, name=simpleDate, id=simpleDate, class=formInput, placeholder=05-12-1990;
+							type=color, name=simpleColor, id=simpleColor, class=formInput;
+							type=range, name=simpleRange, id=simpleRange, class=formInput, min=1, max=2;
+							type=datetime, name=simpleDateTime, id=simpleDateTime, class=formInput;
+							type=url, name=simpleUrl, id=simpleUrl, class=formInput, placeholder=www.example.com;
+							type=button, name=simpleButton, id=simpleButton, class=formInput;
+							type=submit, name=submit, id=submit, class=formInput;
+						  ';
+		$f->save();
+
+		$f = new Field();
+		$f->type = $this->modules->get("FieldtypeTextareaLanguage");
+		$f->name = 'MultiLangFormLanguages';
+		$f->label = 'MultiLangFormLanguages';
+		$f->description = 'Hier kommen die zu übersetzenden Elemente rein. ID muss der ID im MultiLangFormBuilder entsprechen.
+							Beispiele:
+							id=simpleTextarea, label=Textarea, value=This is an english text.;
+
+							id=GenderRadio, label=Gender Radio, values=m:f(checked):n;
+							id=GenderCheckbox, label=Gender Checkbox, values=m:f:n(checked);
+							id=GenderSelect, label=Gender Select, values=male:female:none;
+
+							id=simpleText, label=Textfield, placeholder=this is a placeholder;
+							id=simpleEmail, label=Your Mail, placeholder=my@mail.com;
+							id=simplePass, label=Password, value=myPass;
+							id=simpleNumber, label=Number;
+							id=simpleDate, label=Date;
+							id=simpleColor, label=Color;
+							id=simpleRange, label=Range;
+							id=simpleDateTime, label=Date Time;
+							id=simpleUrl, label=Website, placeholder=www.example.com;
+							id=simpleButton, value=Button;
+							id=submit, value=Send;
+						  ';
+		$f->save();
+		//End create MultiLangFormBuilder and MultiLangFormLanguages Fields
+	}
+	public function ___uninstall(){
+		//Delete ajaxSendMail Page
+		$p = $this->pages->get("template=MultiLangForm");
+		$p->removeStatus(Page::statusLocked);
+		$p->removeStatus(Page::statusHidden);
+		$p->save();
+		$p->delete();
+		$this->message("ajaxMultiLangForm-Page deleted.");
+
+		//Remove the two fields from every template it is used by
+		foreach($this->templates as $template){
+			foreach($template->fieldgroup as $field){
+				if($field->name == "MultiLangFormBuilder"){
+					$template->fieldgroup->remove($field);
+					$template->fieldgroup->save();
+				}
+				if($field->name == "MultiLangFormLanguages"){
+					$template->fieldgroup->remove($field);
+					$template->fieldgroup->save();
+				}
+			}
+		}
+		$this->message("fields removed from any template.");
+
+		//Delete both fields
+		$f = $this->fields->get('MultiLangFormBuilder');
+		$f->flags = Field::flagSystemOverride;
+		$f->flags = 0;
+		$this->fields->delete($f);
+
+		$f = $this->fields->get('MultiLangFormLanguages');
+		$f->flags = Field::flagSystemOverride;
+		$f->flags = 0;
+		$this->fields->delete($f);
+		$this->message("fields deleted.");
+
+		//Delete the template
+		$t = $this->templates->get("name=MultiLangForm");
+		$this->templates->delete($t);
+		$this->message("template deleted.");
+
+		//Delete the Fieldgroup
+		$fg = $this->fieldgroups->get('MultiLangForm');
+		$this->fieldgroups->delete($fg);
+		$this->message("fieldgroup deleted.");
+
+		//Delete the template file
+		unlink('MultiLangForm.php');
+		$this->message("template file deleted.");
+	}
+	private function setUp(){
+		$aInit = $this->userInit;
+		// $this->aInit['loader'] = $this->config->urls->MultiLangForm."hourglass.svg";
+		$this->aInit = array_merge($this->aInit, $aInit);
+		$this->aInit['loader'] = '<img id='."'"."loader".$this->aInit['formId']."'".' src='."'".$this->aInit['loader']."'".'>';
+		//if used language is default language, set $this->responseLang to $this->aInit['defaultLanguage'] else set $this->reponseLang to current user language.
+		$this->user->language->name=='default'?$this->responseLang = $this->aInit['defaultLanguage'] : $this->responseLang = $this->user->language->name;
+
+		$count = 0;
+		foreach ($this->languages as $key => $value) {
+			$count++;
+		}
+		if($count>=2&&$this->modules->isInstalled("LanguageSupportPageNames")==true){
+			$this->aInit['ajaxUrl'] = $this->config->urls->root.$this->aInit['defaultLanguage'].'/ajaxmultilangform/';
+		}
+		else{
+
+			/*$lalias = '';
+			$default = $this->wire("languages")->get("default");
+			$lalias_name = $this->wire("sanitizer")->pageName($lalias);*/
+			#$page = wire('pages')->find("id=1");
+			/*$page->set("status$default",1);
+			$page->set("name$default",$lalias_name);
+			$page->save();*/
+
+			$this->aInit['ajaxUrl'] = $this->config->urls->root.'ajaxmultilangform/';
+		}
+		if($this->aInit['action']==''){
+			$this->aInit['action']=$this->aInit['ajaxUrl'];
+		}
+
+		$this->breakLabel = $this->aInit['breakLabel'];
+		$this->wrap = $this->aInit['wrap'];
+
+		$this->constructFormTag();
+
+		$structureArray = $this->stringToArray($this->aInit['structure']);
+		$translationArray = $this->stringToArray($this->aInit['translation']);
+
+		$structureArray = $this->combineArrays($structureArray, $translationArray);
+
+		$this->aResultArray = $structureArray;
+		$this->sResultHtml = $this->arrayToHtml($structureArray);
+		$this->aRequired = $this->setRequiredArray($this->aResultArray);
+
+		require("MultiLangFormMessages.php");
+		$this->message = $message;
+	}
+	private function constructFormTag(){
+		$this->sFormTag = '<form id="'.$this->aInit['formId'].'" action="'.$this->aInit['action'].'" method="'.$this->aInit['method'].'">';
+	}
+	private function stringToArray($string){
+		$finalArray = [];
+		$string = preg_replace("/\r|\n/", "", $string);
+		$arraySemicolon = explode(';', $string);
+		foreach ($arraySemicolon as $arraySemicolonKey => $arraySemicolonValue) {
+			$arrayComma = explode(',', $arraySemicolonValue);
+			foreach ($arrayComma as $arrayCommaKey => $arrayCommaValue) {
+				$arrayComma[$arrayCommaKey] = trim($arrayCommaValue);
+				$newArray = explode('=', $arrayCommaValue);
+				$newKey = strtolower(trim($newArray[0]));
+				array_key_exists(1, $newArray) ? $newValue = trim($newArray[1]) : $newValue = '';
+				$arrayComma[$newKey] = $newValue;
+				unset($arrayComma[$arrayCommaKey]);
+			}
+			if(array_key_exists('id', $arrayComma)):
+				$finalArray[$arrayComma['id']] = $arrayComma;
+			endif;
+		}
+		if(is_array($finalArray)):
+			return($finalArray);
+		endif;
+		return;
+	}
+	private function combineArrays($structure, $translation){
+		$array = [];
+		foreach ($structure as $structureKey => $structureValue) {
+			foreach ($translation as $translationKey => $translationValue) {
+				if($translationKey==$structureKey){
+					$array[$translationKey] = array_merge($structure[$structureKey], $translation[$translationKey]);
+				}
+			}
+		}
+		$array = array_merge($structure, $array);
+		if($this->aInit['honeyPot']){
+			$honeypot['id'] = 'honeypot';
+			$honeypot['name'] = 'honeypot';
+			$honeypot['type'] = 'text';
+			$honeypot['class'] = 'hidden';
+			$array['honeypot'] = $honeypot;
+		}
+		return $array;
+	}
+	private function arrayToHtml($structure){
+		$html = '';
+		foreach ($structure as $structureKey => $structureValue) {
+			$html .= '';
+			if($this->wrap != ''&&!in_array($structureValue['type'], $this->noneFormTypes)){
+				$html .= '<'.$this->wrap.' id="wrap'.$structureValue['name'].'">'.PHP_EOL;
+			}
+			if(isset($structureValue['label'])){
+				$html .= '<label for="'.$structureValue['id'].'">';
+				$html .= $structureValue['label'];
+				isset($structureValue['required']) ? $html.=$this->aInit['requiredZeichen'] : $html .= '';
+				$html .= '</label>'.PHP_EOL;
+				if($this->breakLabel == true){
+					$html .= '<br>'.PHP_EOL;
+				}
+			}
+			if(in_array($structureValue['type'], $this->simpleTypes)){
+				$html .= $this->buildSimpleInput($structureValue);
+			}
+			elseif(in_array($structureValue['type'], $this->multiTypes)){
+				$html .= $this->buildMultiInput($structureValue);
+			}
+			elseif(in_array($structureValue['type'], $this->specialTypes)){
+				$html .= $this->buildSpecialInput($structureValue);
+			}
+			elseif(in_array($structureValue['type'], $this->noneFormTypes)){
+				$html.= $this->buildNoneFormInput($structureValue);
+			}
+			else{
+				$html .= 'Type does not exist!';
+			}
+			if($this->wrap != ''&&!in_array($structureValue['type'], $this->noneFormTypes)){
+				$html .= '</'.$this->wrap.'>'.PHP_EOL;
+			}
+		}
+		return $html;
+	}
+	private function buildSimpleInput($structureValue){
+		$html = '<input ';
+		$html .= 'id="'.$structureValue['id'].'" ';
+		$html .= 'class="'.$structureValue['class'].'" ';
+		isset($structureValue['required']) ? $html.='required="'.$structureValue['required'].'" ' : $html .= '';
+		foreach ($this->simpleAttributes as $attrValue) {
+			if(array_key_exists($attrValue, $structureValue)){
+				$html .= $attrValue.'="'.$structureValue[$attrValue].'" ';
+			}
+		}
+		$html .= '/>'.PHP_EOL;
+		return $html;
+	}
+	private function buildMultiInput($structureValue){
+		$options = explode(':', $structureValue['values']);
+		foreach ($options as $optionKey => $optionValue){
+			if(strpos($optionValue, '(checked)')){
+				$checked = 'checked ';
+				$optionValue = str_replace('(checked)', '', $optionValue);
+			}
+			$html .= '<input ';
+			$html .= 'id="'.$structureValue['id'].'_'.$optionValue.'" ';
+			$html .= 'class="'.$structureValue['class'].'" ';
+			$html .= 'value="'.$optionValue.'" ';
+			isset($structureValue['required']) ? $html.='required="'.$structureValue['required'].'" ' : $html .= '';
+			$optionValue = trim($optionValue);
+			foreach ($this->simpleAttributes as $attrValue) {
+				if(array_key_exists($attrValue, $structureValue)){
+					$html .= $attrValue.'="'.$structureValue[$attrValue].'" ';
+				}
+			}
+			$html .= $checked;
+			$checked = '';
+			$html .= '/>';
+			$html .= '<label for="'.$structureValue['id'].'_'.$optionValue.'">';
+			$html .= $optionValue;
+			$html .= '</label>'.PHP_EOL;
+		}
+		return $html;
+	}
+	private function buildSpecialInput($structureValue){
+		$html = '';
+		if($structureValue['type']=='textarea'){
+			$html .= '<textarea ';
+			$html .= 'id="'.$structureValue['id'].'" ';
+			$html .= 'class="'.$structureValue['class'].'" ';
+			foreach ($this->simpleAttributes as $attrValue) {
+				if(array_key_exists($attrValue, $structureValue)){
+					$html .= $attrValue.'="'.$structureValue[$attrValue].'" ';
+				}
+			}
+			$html .= '>';
+			if(isset($structureValue['value'])){
+				$html .= $structureValue['value'];
+			}
+			$html .= '</textarea>'.PHP_EOL;
+		}
+		if($structureValue['type']=='select'){
+			$html .= '<select name="'.$structureValue['type'].'" ';
+			$html .= 'id="'.$structureValue['id'].'" ';
+			$html .= 'class="'.$structureValue['class'].'" ';
+			$html .= '>';
+			$options = explode(':', $structureValue['values']);
+			foreach ($options as $optionKey => $optionValue) {
+				$optionValue = trim($optionValue);
+				$html .= '<option value="'.$optionValue.'" ';
+				if (strpos($optionValue, 'selected')){ $html.='selected'; $optionValue = str_replace('(selected)', '', $optionValue);}
+				$html .= '>';
+				$html .= $optionValue;
+				$html .= '</option>';
+			}
+			$html .= '</select>'.PHP_EOL;
+		}
+		return $html;
+	}
+	private function buildNoneFormInput($structureValue){
+		if($structureValue['type']=='response'){
+			$html .= '<p ';
+			if(isset($structureValue['id'])){
+				$html .= 'id="'.$structureValue['id'].'" ';
+			}
+			if(isset($structureValue['class'])){
+				$html .= 'class="'.$structureValue['class'].'" ';
+			}
+			$html .= '></p>';
+		}
+		return $html;
+	}
+	private function setRequiredArray($structureValue){
+		foreach ($structureValue as $structureKey => $structureValue) {
+			foreach ($structureValue as $key => $value) {
+				//if($key == 'required'){
+					$aRequired[$structureKey] = $value;
+				//}
+			}
+		}
+		return $aRequired;
+	}
+	private function buildScriptAjax(){
+		$html = '<script type="text/javascript">
+					function ajaxMailer'.$this->aInit['formId'].'(){
+						$("#'.$this->aInit['formId'].'").submit(function(){
+							JsonRequired = '.json_encode($this->aRequired).';
+							$.ajax({
+								url: $(this).attr("action"),
+								data: {form:$(this).serializeArray(), mail:"'.$this->aInit['mail'].'", bcc:"'.$this->aInit['bcc'].'", betreff:"'.$this->aInit['betreff'].'", absender:"'.$this->aInit['absender'].'", defLang:"'.$this->aInit['defaultLanguage'].'", required:JsonRequired},
+								datatype: "json",
+								type: "POST",
+								crossDomain: true,
+								beforeSend: function(){
+									$("#'.$this->aInit['formId'].'").hide();
+									loader = "'.$this->aInit['loader'].'";
+									$("#'.$this->aInit['formId'].'").before(loader);
+									$("input").each(function(){
+										$(this).removeClass("inputProblem");
+									});
+									$(".formProblem").each(function(){$(this).remove();});
+								},
+								success: function(returnJson){
+									returnJson = jQuery.parseJSON(returnJson);
+
+									if(returnJson.mail == 0){
+										fails = returnJson.fail.split("+");
+										$.each(fails, function(index, value){
+											$("#"+value).addClass("inputProblem");
+											$("#"+value).before("<div class='."'".'formProblem'."'".'>'.$this->message['problem'][$this->responseLang].'</div>");
+										});
+									}
+									else if(returnJson.mail == 2){
+										$("#'.$this->aInit['formId'].'").html("'.$this->message['error'][$this->responseLang].'");
+									}
+									else if(returnJson.mail == 1){
+										$("#'.$this->aInit['formId'].'").html("'.$this->message['success'][$this->responseLang].'");
+									}
+									else if(returnJson.mail == 3){
+
+									}
+								},
+								error: function(){
+									$("#'.$this->aInit['formId'].'").html("'.$this->message['error'][$this->responseLang].'");
+								},
+								complete: function(data){
+									$("#loader'.$this->aInit['formId'].'").remove();
+									$("#'.$this->aInit['formId'].'").show();
+
+								}
+							});
+							return false;
+						});
+					}
+					$( document ).ready(function() {
+						ajaxMailer'.$this->aInit['formId'].'();
+					});
+				</script>';
+		return $html;
+	}
+	public function render(){
+		$this->setUp();
+		echo '<!--- MultiLangForm START -->';
+		echo $this->sFormTag;
+		echo $this->sResultHtml;
+		echo '</form>';
+		if($this->aInit['ajaxSend']==true){echo '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>'; echo $this->buildScriptAjax();}
+		echo '<!--- MultiLangForm END -->';
+		return;
+	}
+}

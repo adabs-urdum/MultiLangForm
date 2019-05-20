@@ -1,0 +1,8 @@
+<?php
+if(file_exists('./../modules/MultiLangForm/ajaxSendMail.php')){
+	include('./../modules/MultiLangForm/ajaxSendMail.php');
+}
+else{
+	echo 'There seems to be a techinical problem. Please inform the webmaster.';
+}
+?>
