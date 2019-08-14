@@ -81,7 +81,7 @@
 
 - 8. `$MultiLangForm = new MultiLangForm();` einfügen um ein neues Formular zu erzeugen.
 
-- 9. Oder mit individuellen Daten userInit setzen.
+- 9. userInit setzen und nach Bedarf anpassen.
 	 ```
 	 $MultiLangForm->userInit = array(
 		 'structure' 	  => $page->MultiLangFormBuilder,	//Hier kommt das Feld MultiLangFormBuilder hinein

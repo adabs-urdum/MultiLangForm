@@ -356,6 +356,8 @@ class MultiLangForm extends WireData implements Module{
 	}
 	private function buildMultiInput($structureValue){
 		$options = explode(':', $structureValue['values']);
+		$html = '';
+		$checked = '';
 		foreach ($options as $optionKey => $optionValue){
 			if(strpos($optionValue, '(checked)')){
 				$checked = 'checked ';
