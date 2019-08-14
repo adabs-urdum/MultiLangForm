@@ -108,8 +108,8 @@
 ### Checkbox, Select und Radio per GET Parameter vorselektieren
 Die values des betreffenden Feldes im ProcessWire-Feld MultiLangFormLanguages dienen als Wert, der checked/selected werden soll.
 
-id=ParamRadio, label=Param Radio, values=**param1:param2:param3**;
-id=ParamCheckbox, label=Param Checkbox, values=**param1:param2:param3**;
+id=ParamRadio, label=Param Radio, values=**param1:param2:param3**;\
+id=ParamCheckbox, label=Param Checkbox, values=**param1:param2:param3**;\
 id=ParamSelect, label=Param Select, values=**param1:param2:param3**;
 
 Mit diesen GET Parametern definiert man die vorselektierten Werte.
