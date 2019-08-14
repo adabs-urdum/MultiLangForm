@@ -41,6 +41,7 @@ class MultiLangForm extends WireData implements Module{
 	private $sFormTag = '';
 	private $sLanguage = '';
 	private $aRequired = '';
+	private $preCheckedFields = [];
 
 	public static function getModuleInfo() {
 		return array(
@@ -219,6 +220,8 @@ class MultiLangForm extends WireData implements Module{
 		//if used language is default language, set $this->responseLang to $this->aInit['defaultLanguage'] else set $this->reponseLang to current user language.
 		$this->user->language->name=='default'?$this->responseLang = $this->aInit['defaultLanguage'] : $this->responseLang = $this->user->language->name;
 
+		$this->getPreSelectedValues();
+
 		$count = 0;
 		foreach ($this->languages as $key => $value) {
 			$count++;
@@ -304,6 +307,9 @@ class MultiLangForm extends WireData implements Module{
 		}
 		return $array;
 	}
+	private function getPreSelectedValues(){
+		$this->preCheckedFields = explode(',', $_GET['multilangform']);
+	}
 	private function arrayToHtml($structure){
 		$html = '';
 		foreach ($structure as $structureKey => $structureValue) {
@@ -358,8 +364,10 @@ class MultiLangForm extends WireData implements Module{
 		$options = explode(':', $structureValue['values']);
 		$html = '';
 		$checked = '';
+
 		foreach ($options as $optionKey => $optionValue){
-			if(strpos($optionValue, '(checked)')){
+			$preselected = in_array($optionValue, $this->preCheckedFields) ? true : false;
+			if(strpos($optionValue, '(checked)') || $preselected){
 				$checked = 'checked ';
 				$optionValue = str_replace('(checked)', '', $optionValue);
 			}
@@ -408,8 +416,9 @@ class MultiLangForm extends WireData implements Module{
 			$options = explode(':', $structureValue['values']);
 			foreach ($options as $optionKey => $optionValue) {
 				$optionValue = trim($optionValue);
+				$preselected = in_array($optionValue, $this->preCheckedFields) ? true : false;
 				$html .= '<option value="'.$optionValue.'" ';
-				if (strpos($optionValue, 'selected')){ $html.='selected'; $optionValue = str_replace('(selected)', '', $optionValue);}
+				if (strpos($optionValue, 'selected') || $preselected){ $html.='selected'; $optionValue = str_replace('(selected)', '', $optionValue);}
 				$html .= '>';
 				$html .= $optionValue;
 				$html .= '</option>';
