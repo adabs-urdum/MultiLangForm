@@ -83,22 +83,21 @@
 - 8. `$MultiLangForm = new MultiLangForm();` einfügen um ein neues Formular zu erzeugen.
 
 - 9. userInit setzen und nach Bedarf anpassen.
-	 ```
-	 $MultiLangForm->userInit = array(
-		 'structure' 	  => $page->MultiLangFormBuilder,	//Hier kommt das Feld MultiLangFormBuilder hinein
-		 'translation' 	  => $page->MultiLangFormLanguages,	//Hier kommt das Feld MultiLangFormLanguages hinein
-		 'formId'		  => 'MultiLangForm',				//ID des <form> Tags für CSS
-		 'breakLabel' 	  => false,							//setzt einen <br> nach jedem <label>
-		 'honeyPot'		  => true,							//hängt ein Feld an das Formular mit der CSS Klasse hidden. Wenn ausgefüllt, wird das Formular nicht versendet
-		 'wrap'			  => 'section',						//umrahmt <label> und <input> mit <section
-		 'loader'		  => 'http://adabs.ch/site/assets/files/1284/thumbnail_img_0325_small.jpg',		//Pfad zum loader bild. Default ist die Sanduhr
-		 'mail'			  => '',							//Mail Empfänger
-		 'bcc'			  => '',							//Blind Copy Empfänger
-		 'betreff'		  => 'your website has called',		//Mail Betreff
-		 'absender'		  => '',							//Mail Absender
-		 'defaultLanguage' => 'de',							//Default Language vom BackEnd
-		 'requiredZeichen' => '*'							//Wird an das Label angefügt bei den required=true Feldern
-	 );
+		```
+		 $MultiLangForm->userInit = array(
+			'structure'       => $page->MultiLangFormBuilder,  //Hier kommt das Feld MultiLangFormBuilder hinein
+			'translation'     => $page->MultiLangFormLanguages,  //Hier kommt das Feld MultiLangFormLanguages hinein
+			'formId'  	      => 'MultiLangForm',  //ID des <form> Tags für CSS
+			'breakLabel'      => false,  //setzt einen <br> nach jedem <label>
+			'honeyPot'        => true,  //hängt ein Feld an das Formular mit der CSS Klasse hidden. Wenn ausgefüllt, wird das Formular nicht versendet
+			'wrap'            => 'section',  //umrahmt <label> und <input> mit <section>
+			'loader'          => $config->urls->templates . 'img/hourglass.svg',  //Pfad zum loader bild. Default ist die Sanduhr
+			'mail'  	      => '[cyrill@adabs.ch](mailto:cyrill@adabs.ch)',  //Mail Empfänger
+			'betreff'  	      => 'your website has called',  //Mail Betreff
+			'absender'        => '[cyrill@adabs.ch](mailto:cyrill@adabs.ch)',  //Mail Absender
+			'defaultLanguage' => 'de',  //Default Language vom BackEnd
+			'requiredZeichen' => '*'  //Wird an das Label angefügt bei den required=true Feldern
+		);
 	 ```
 
 - 10. Formular ausgeben über $MultiLangForm->render();
@@ -108,8 +107,8 @@
 ### Checkbox, Select und Radio per GET Parameter vorselektieren
 Die values des betreffenden Feldes im ProcessWire-Feld MultiLangFormLanguages dienen als Wert, der checked/selected werden soll.
 
-id=ParamRadio, label=Param Radio, values=**param1:param2:param3**;\
-id=ParamCheckbox, label=Param Checkbox, values=**param1:param2:param3**;\
+id=ParamRadio, label=Param Radio, values=**param1:param2:param3**;
+id=ParamCheckbox, label=Param Checkbox, values=**param1:param2:param3**;
 id=ParamSelect, label=Param Select, values=**param1:param2:param3**;
 
 Mit diesen GET Parametern definiert man die vorselektierten Werte.
