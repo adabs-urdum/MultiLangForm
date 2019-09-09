@@ -50,7 +50,7 @@ class MultiLangForm extends WireData implements Module{
 			'title' => 'Multiple Language Form',
 
 			// version number
-			'version' => 1.09,
+			'version' => 1.10,
 
 			// summary is brief description of what this module is
 			'summary' => '',
@@ -308,7 +308,9 @@ class MultiLangForm extends WireData implements Module{
 		return $array;
 	}
 	private function getPreSelectedValues(){
-		$this->preCheckedFields = explode(',', $_GET['multilangform']);
+		if(array_key_exists('multilangform', $_GET)){
+			$this->preCheckedFields = explode(',', $_GET['multilangform']);
+		}
 	}
 	private function arrayToHtml($structure){
 		$html = '';
@@ -367,12 +369,14 @@ class MultiLangForm extends WireData implements Module{
 
 		foreach ($options as $optionKey => $optionValue){
 			$preselected = in_array($optionValue, $this->preCheckedFields) ? true : false;
+			$optionValueClean = str_replace(' ', '_', $optionValue);
+			$optionValueClean = iconv("utf-8", "ascii//IGNORE", $optionValueClean);
 			if(strpos($optionValue, '(checked)') || $preselected){
 				$checked = 'checked ';
 				$optionValue = str_replace('(checked)', '', $optionValue);
 			}
 			$html .= '<input ';
-			$html .= 'id="'.$structureValue['id'].'_'.$optionValue.'" ';
+			$html .= 'id="'.$structureValue['id'].'_'.$optionValueClean.'" ';
 			$html .= 'class="'.$structureValue['class'].'" ';
 			$html .= 'value="'.$optionValue.'" ';
 			isset($structureValue['required']) ? $html.='required="'.$structureValue['required'].'" ' : $html .= '';
@@ -385,7 +389,7 @@ class MultiLangForm extends WireData implements Module{
 			$html .= $checked;
 			$checked = '';
 			$html .= '/>';
-			$html .= '<label for="'.$structureValue['id'].'_'.$optionValue.'">';
+			$html .= '<label for="'.$structureValue['id'].'_'.$optionValueClean.'">';
 			$html .= $optionValue;
 			$html .= '</label>'.PHP_EOL;
 		}
