@@ -367,6 +367,12 @@ class MultiLangForm extends WireData implements Module{
 		$html = '';
 		$checked = '';
 
+		if(array_key_exists('name', $structureValue) && array_key_exists('type', $structureValue)){
+			if($structureValue['type'] == 'checkbox'){
+				$structureValue['name'] .= '[]';
+			}
+		}
+
 		foreach ($options as $optionKey => $optionValue){
 			$preselected = in_array($optionValue, $this->preCheckedFields) ? true : false;
 			$optionValueClean = str_replace(' ', '_', $optionValue);
