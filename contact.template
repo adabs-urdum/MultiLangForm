@@ -1,11 +1,11 @@
-<?php 	
+<?php
 $aInit = array( 'structure' 	  => $page->MultiLangFormBuilder,	//Hier kommt das Feld MultiLangFormBuilder hinein
 					'translation' 	  => $page->MultiLangFormLanguages,	//Hier kommt das Feld MultiLangFormLanguages hinein
 					'formId'		  => 'MultiLangForm',				//ID des <form> Tags für CSS
 					'breakLabel' 	  => false,							//setzt einen <br> nach jedem <label>
 					'honeyPot'		  => true,							//hängt ein Feld an das Formular mit der CSS Klasse hidden. Wenn ausgefüllt, wird das Formular nicht versendet
 					'wrap'			  => 'section',						//umrahmt <label> und <input> mit <section>
-					'loader'		  => 'http://adabs.ch/site/assets/files/1284/thumbnail_img_0325_small.jpg',		//Pfad zum loader bild. Default ist die Sanduhr
+					'loader'		  => 'https://adabs.ch/site/assets/files/1284/thumbnail_img_0325_small.jpg',		//Pfad zum loader bild. Default ist die Sanduhr
 					'mail'			  => '',							//Mail Empfänger
 					'betreff'		  => 'your website has called',		//Mail Betreff
 					'absender'		  => '',							//Mail Absender
@@ -25,7 +25,7 @@ $aInit = array( 'structure' 	  => $page->MultiLangFormBuilder,	//Hier kommt das 
 	</head>
 <body>
 <div id="wrap">
-	 <div id="languages">     
+	 <div id="languages">
 		<ul>
 					<?php
 
@@ -41,24 +41,24 @@ $aInit = array( 'structure' 	  => $page->MultiLangFormBuilder,	//Hier kommt das 
 					// restore the original language setting
 					$user->language = $savedLanguage;
 					?>
-		</ul>  
+		</ul>
 	</div>
-	
-	
-	
+
+
+
 	<h1><?php echo $page->title; ?></h1>
-	
+
 	<div id="formular">
 		<?php $MultiLangForm->render(); ?>
 	</div>
-	
-	
 
-	
-	
-	
-	
-	
-</div>	
+
+
+
+
+
+
+
+</div>
 </body>
 </html>

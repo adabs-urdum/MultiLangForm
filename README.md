@@ -9,7 +9,7 @@
 - hourglass.svg – ***Nicht löschen.*** *Dies ist die Default Animation, wenn ein Formular verarbeitet wird.*
 – MultiLangForm.module – ***Nicht verändern.*** *Das ist das Modul an sich. (Where the magic happens.)*
 - MultiLangForm.template – ***Nicht verändern.*** *Beim installieren des Moduls wird ein Template aus dieser Datei erstellt.*
-- MultiLangFormMessages.php – ***Veränderbar.*** *In dieser Datei werden die Rückmeldungen (Sendeerfolg, Sendefehler und Fehleingabe) in allen erforderlichen Sprachen erfasst.*
+- MultiLangFormMessages.php – ***Veränderbar.*** *In dieser Datei werden die Rückmeldungen (Sendeerfolg, Sendefehler und Fehleingabe), Betreff und E-Mail-Body in allen erforderlichen Sprachen erfasst.*
 – regexPatterns.php –  ***Veränderbar.*** *Hier werden die Regex Zeilen erfasst. Die Bezeichnung der Sprache ['de']/['en'] bezieht sich im Backend auf den Name der Sprache, nicht auf Title!*
 
 ## Anleitung
@@ -93,12 +93,13 @@
 			'wrap'            => 'section',  //umrahmt <label> und <input> mit <section>
 			'loader'          => $config->urls->templates . 'img/hourglass.svg',  //Pfad zum loader bild. Default ist die Sanduhr
 			'mail'  	      => '[cyrill@adabs.ch](mailto:cyrill@adabs.ch)',  //Mail Empfänger
-			'betreff'  	      => 'your website has called',  //Mail Betreff
 			'absender'        => '[cyrill@adabs.ch](mailto:cyrill@adabs.ch)',  //Mail Absender
 			'defaultLanguage' => 'de',  //Default Language vom BackEnd
 			'requiredZeichen' => '*'  //Wird an das Label angefügt bei den required=true Feldern
 		);
 	 ```
+
+- 9.1 site/modules/MultiLangForm/MultiLangFormMessages.php im Editor öffnen und Texte (Betreff, E-Mail-Body) anpassen.
 
 - 10. Formular ausgeben über $MultiLangForm->render();
 

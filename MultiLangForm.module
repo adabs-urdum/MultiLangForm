@@ -467,7 +467,16 @@ class MultiLangForm extends WireData implements Module{
 							JsonRequired = '.json_encode($this->aRequired).';
 							$.ajax({
 								url: $(this).attr("action"),
-								data: {form:$(this).serializeArray(), mail:"'.$this->aInit['mail'].'", bcc:"'.$this->aInit['bcc'].'", betreff:"'.$this->aInit['betreff'].'", absender:"'.$this->aInit['absender'].'", defLang:"'.$this->aInit['defaultLanguage'].'", required:JsonRequired},
+								data: {
+									form:$(this).serializeArray(),
+									mail:"'.$this->aInit['mail'].'",
+									bcc:"'.$this->aInit['bcc'].'",
+									betreff:"'.$this->aInit['betreff'].'",
+									absender:"'.$this->aInit['absender'].'",
+									defLang:"'.$this->aInit['defaultLanguage'].'",
+									required:JsonRequired,
+									userLanguage:"' . $this->wire('user')->language->title . '"
+								},
 								datatype: "json",
 								type: "POST",
 								crossDomain: true,
